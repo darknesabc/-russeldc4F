@@ -221,16 +221,14 @@
             inputTime
         };
 
-        moveList.unshift(moveData); // 최신순 정렬
+        moveList.unshift(moveData); 
         refreshMoveList();
 
-        // 폼 초기화
         document.getElementById("moveForm").reset();
         document.getElementById("scoreDiv").style.display = "none";
         document.getElementById("otherReason").style.display = "none";
         document.getElementById("otherReasonLabel").style.display = "none";
 
-        // 서버 전송 (기존 URL 유지)
         fetch('https://script.google.com/macros/s/AKfycbyO3_XoamjQF9F7pRazW9L_3P0TqEGH1pg2373ifiob9GJKwfjqV35f0KF053NHElyz/exec', {
             method: 'POST',
             mode: 'no-cors',
@@ -256,13 +254,10 @@
     }
 
     function resetTable() {
-        // 확인 절차 없이 즉시 초기화
+        // 확인 창 없이 즉시 삭제
         moveList = [];
         refreshMoveList();
-    }
     }
     </script>
 </body>
 </html>
-
-
