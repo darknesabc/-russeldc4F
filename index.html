@@ -91,19 +91,26 @@ display: none;
 
 .score { display: none; }
 
-@media (max-width: 768px) {
-form { padding: 15px; }
-button { width: 100%; }
-table, th, td { font-size: 14px; }
-select, textarea { padding: 14px; font-size: 18px; }
+.popup {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 90%;
+max-width: 400px;
+background: white;
+padding: 20px;
+border-radius: 8px;
+box-shadow: 0 0 15px rgba(0,0,0,0.3);
+z-index: 1000;
 }
 
-@media (max-width: 480px) {
-body { margin: 10px; }
-h1 { font-size: 20px; }
-select, button { font-size: 14px; }
-th, td { padding: 10px; }
+.popup button {
+margin-top: 10px;
+width: 100%;
 }
+
 </style>
 </head>
 
@@ -152,7 +159,6 @@ th, td { padding: 10px; }
 <option value="11">11</option>
 </select>
 
-<!-- ✅ 이동사유 먼저 -->
 <label>이동사유:</label>
 <select id="reason" required>
 <option value="">선택하세요</option>
@@ -168,6 +174,13 @@ th, td { padding: 10px; }
 <option value="기타">기타</option>
 <option value="조퇴(컨디션난조)">조퇴(컨디션난조)</option>
 </optgroup>
+
+<!-- 🔒 심야자습 숨김 처리 (사용 시 주석 해제)
+<optgroup label="심야자습">
+<option value="심야자습 신청">심야자습 신청</option>
+<option value="심야자습 취소">심야자습 취소</option>
+</optgroup>
+-->
 
 <optgroup label="규정 위반/지도">
 <option value="지각">지각</option>
@@ -201,93 +214,37 @@ th, td { padding: 10px; }
 <option value="복귀안함">복귀안함</option>
 </select>
 
-<div id="scoreDiv" class="score">
-<label>점수 (1~10점):</label>
-<select id="score">
-<option value="1">1점</option>
-<option value="2">2점</option>
-<option value="3">3점</option>
-<option value="4">4점</option>
-<option value="5">5점</option>
-<option value="6">6점</option>
-<option value="7">7점</option>
-<option value="8">8점</option>
-<option value="9">9점</option>
-<option value="10">10점</option>
-</select>
-</div>
-
-<label id="otherReasonLabel" style="display:none;">기타 사유:</label>
-<textarea id="otherReason" style="display:none;"></textarea>
-
 <button type="submit">제출</button>
-
 </form>
 
-<div id="result">
-<table id="moveList">
-<thead>
-<tr>
-<th>관</th>
-<th>좌석번호</th>
-<th>복귀교시</th>
-<th>이동사유</th>
-<th>입력날짜</th>
-<th>입력시간</th>
-<th>점수</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
+<!-- ✅ 심야자습 팝업 -->
+<div id="nightPopup" class="popup">
+<h3>심야자습 신청 확인</h3>
+<p>정말 신청/취소 하시겠습니까?</p>
+<button onclick="confirmNightStudy()">확인</button>
+<button onclick="closeNightPopup()">취소</button>
 </div>
 
-<div class="error" id="errorMessage">기타 사유를 입력해주세요.</div>
-
 <script>
-
 let moveList = [];
-
-const fixedScores = {
-"무단이탈": 10,
-"전자기기 무단사용": 10,
-"핸드폰/Wifi 무단반입": 10,
-"핸드폰 무단사용": 7,
-"무단결석": 7,
-"타층/타관 무단출입": 5,
-"원내대화": 5,
-"무단지각": 5,
-"취침강제하원": 3,
-"음식물섭취": 3,
-"입/퇴실 미준수": 3,
-"핸드폰 미제출": 10
-};
+let nightTempData = null;
 
 document.getElementById("reason").addEventListener("change", function() {
-
-const value = this.value;
-
-document.getElementById("scoreDiv").style.display =
-fixedScores[value] ? "block" : "none";
-
-if (value === "기타") {
-document.getElementById("otherReason").style.display = "block";
-document.getElementById("otherReasonLabel").style.display = "block";
-} else {
-document.getElementById("otherReason").style.display = "none";
-document.getElementById("otherReasonLabel").style.display = "none";
-document.getElementById("errorMessage").style.display = "none";
+if (this.value === "심야자습 신청" || this.value === "심야자습 취소") {
+document.getElementById("nightPopup").style.display = "block";
 }
-
-if (fixedScores[value]) {
-document.getElementById("score").value = fixedScores[value];
-} else {
-document.getElementById("score").value = "";
-}
-
 });
 
-document.getElementById("moveForm").addEventListener("submit", function(event) {
+function closeNightPopup() {
+document.getElementById("nightPopup").style.display = "none";
+document.getElementById("reason").value = "";
+}
 
+function confirmNightStudy() {
+document.getElementById("nightPopup").style.display = "none";
+}
+
+document.getElementById("moveForm").addEventListener("submit", function(event) {
 event.preventDefault();
 
 const building = document.getElementById("building").value;
@@ -296,49 +253,19 @@ document.getElementById("seatNumber").value +
 document.getElementById("seatNumber2").value;
 const returnTime = document.getElementById("returnTime").value;
 const reason = document.getElementById("reason").value;
-const otherReason = document.getElementById("otherReason").value;
-const score = parseInt(document.getElementById("score").value) || null;
-
-if (reason === "기타" && !otherReason.trim()) {
-document.getElementById("errorMessage").style.display = "block";
-return;
-}
-
-submitMoveData(building, seatNumber, returnTime, reason, otherReason, score);
-
-});
-
-function submitMoveData(building, seatNumber, returnTime, reason, otherReason, score) {
 
 const now = new Date();
-const inputDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-const inputTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+const inputDate = now.toISOString().split("T")[0];
+const inputTime = now.toTimeString().split(" ")[0];
 
 const moveData = {
-building,
-seatNumber,
-returnTime,
-reason: reason === "기타" ? otherReason : reason,
-score: fixedScores[reason] ? score : null,
-inputDate,
-inputTime
+building, seatNumber, returnTime, reason, inputDate, inputTime
 };
 
-moveList.push(moveData);
-moveList.sort((a,b) => b.inputTime.localeCompare(a.inputTime));
+moveList.unshift(moveData);
 refreshMoveList();
-
-document.getElementById("moveForm").reset();
-document.getElementById("scoreDiv").style.display = "none";
-document.getElementById("otherReason").style.display = "none";
-document.getElementById("otherReasonLabel").style.display = "none";
-
-fetch('https://script.google.com/macros/s/AKfycbyO3_XoamjQF9F7pRazW9L_3P0TqEGH1pg2373ifiob9GJKwfjqV35f0KF053NHElyz/exec', {
-method: 'POST',
-body: JSON.stringify(moveData)
+this.reset();
 });
-
-}
 
 function refreshMoveList() {
 const tableBody = document.querySelector("#moveList tbody");
@@ -352,7 +279,7 @@ row.innerHTML = `
 <td>${moveData.reason}</td>
 <td>${moveData.inputDate}</td>
 <td>${moveData.inputTime}</td>
-<td>${moveData.score || '-'}</td>
+<td>-</td>
 `;
 tableBody.appendChild(row);
 });
@@ -362,7 +289,6 @@ function resetTable() {
 moveList = [];
 refreshMoveList();
 }
-
 </script>
 
 </body>
