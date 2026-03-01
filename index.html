@@ -4,45 +4,106 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>러셀 이동일지 작성</title>
+
 <style>
 body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
 h1 { color: #336699; font-size: 24px; }
+
 form {
-display: inline-block; text-align: left; border: 1px solid #ccc;
-padding: 20px; width: 100%; max-width: 500px; box-sizing: border-box;
-background-color: #f9f9f9; border-radius: 8px;
+display: inline-block;
+text-align: left;
+border: 1px solid #ccc;
+padding: 20px;
+width: 100%;
+max-width: 500px;
+box-sizing: border-box;
+background-color: #f9f9f9;
+border-radius: 8px;
 }
+
 label { display: block; margin-bottom: 8px; font-weight: bold; }
+
 select, textarea {
-width: 100%; padding: 12px; margin-bottom: 15px; box-sizing: border-box;
-font-size: 16px; border-radius: 4px; border: 1px solid #ccc;
+width: 100%;
+padding: 12px;
+margin-bottom: 15px;
+box-sizing: border-box;
+font-size: 16px;
+border-radius: 4px;
+border: 1px solid #ccc;
 }
+
 button {
-padding: 10px 20px; background-color: #336699; color: #fff;
-border: none; cursor: pointer; width: 100%; max-width: 120px; border-radius: 4px;
+padding: 10px 20px;
+background-color: #336699;
+color: #fff;
+border: none;
+cursor: pointer;
+width: 100%;
+max-width: 120px;
+border-radius: 4px;
 }
+
 button:hover { background-color: #28597b; }
+
 #resetButton {
-margin: 10px 0; float: left; width: auto; padding: 8px 16px;
-background-color: #ccc; cursor: pointer;
+margin: 10px 0;
+float: left;
+width: auto;
+padding: 8px 16px;
+background-color: #ccc;
+cursor: pointer;
 }
+
 table {
-margin: 20px auto; border-collapse: collapse; width: 100%; max-width: 700px;
-border-radius: 8px; overflow: hidden;
+margin: 20px auto;
+border-collapse: collapse;
+width: 100%;
+max-width: 700px;
+border-radius: 8px;
+overflow: hidden;
 }
-th, td { border: 1px solid #ccc; padding: 12px; text-align: center; }
+
+th, td {
+border: 1px solid #ccc;
+padding: 12px;
+text-align: center;
+}
+
 thead { background-color: #f2f2f2; font-weight: bold; }
 tbody tr:nth-child(even) { background-color: #f9f9f9; }
 tbody tr:hover { background-color: #f1f1f1; }
+
 .error {
-color: red; margin-top: 10px; position: fixed; top: 50%; left: 50%;
+color: red;
+margin-top: 10px;
+position: fixed;
+top: 50%;
+left: 50%;
 transform: translate(-50%, -50%);
-background-color: rgba(255, 255, 255, 0.95);
-padding: 20px; border-radius: 8px;
-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-font-size: 18px; display: none;
+background-color: rgba(255,255,255,0.95);
+padding: 20px;
+border-radius: 8px;
+box-shadow: 0 0 10px rgba(0,0,0,0.2);
+font-size: 18px;
+display: none;
 }
+
 .score { display: none; }
+
+@media (max-width: 768px) {
+form { padding: 15px; }
+button { width: 100%; }
+table, th, td { font-size: 14px; }
+select, textarea { padding: 14px; font-size: 18px; }
+}
+
+@media (max-width: 480px) {
+body { margin: 10px; }
+h1 { font-size: 20px; }
+select, button { font-size: 14px; }
+th, td { padding: 10px; }
+}
 </style>
 </head>
 
@@ -91,10 +152,12 @@ font-size: 18px; display: none;
 <option value="11">11</option>
 </select>
 
-<!-- ✅ 이동사유가 먼저 -->
+<!-- ✅ 이동사유 먼저 -->
 <label>이동사유:</label>
 <select id="reason" required>
 <option value="">선택하세요</option>
+
+<optgroup label="일반 이동">
 <option value="화장실/정수기">화장실/정수기</option>
 <option value="튜터 질의응답">튜터 질의응답</option>
 <option value="외부 학원/과외/보충">외부 학원/과외/보충</option>
@@ -104,6 +167,9 @@ font-size: 18px; display: none;
 <option value="식사">식사</option>
 <option value="기타">기타</option>
 <option value="조퇴(컨디션난조)">조퇴(컨디션난조)</option>
+</optgroup>
+
+<optgroup label="규정 위반/지도">
 <option value="지각">지각</option>
 <option value="입/퇴실 미준수">입/퇴실 미준수</option>
 <option value="핸드폰 미제출">핸드폰 미제출</option>
@@ -117,9 +183,10 @@ font-size: 18px; display: none;
 <option value="무단지각">무단지각</option>
 <option value="취침강제하원">취침강제하원</option>
 <option value="음식물섭취">음식물섭취</option>
+</optgroup>
+
 </select>
 
-<!-- ✅ 복귀교시가 아래로 -->
 <label>복귀교시:</label>
 <select id="returnTime" required>
 <option value="">선택하세요</option>
@@ -134,6 +201,22 @@ font-size: 18px; display: none;
 <option value="복귀안함">복귀안함</option>
 </select>
 
+<div id="scoreDiv" class="score">
+<label>점수 (1~10점):</label>
+<select id="score">
+<option value="1">1점</option>
+<option value="2">2점</option>
+<option value="3">3점</option>
+<option value="4">4점</option>
+<option value="5">5점</option>
+<option value="6">6점</option>
+<option value="7">7점</option>
+<option value="8">8점</option>
+<option value="9">9점</option>
+<option value="10">10점</option>
+</select>
+</div>
+
 <label id="otherReasonLabel" style="display:none;">기타 사유:</label>
 <textarea id="otherReason" style="display:none;"></textarea>
 
@@ -141,8 +224,145 @@ font-size: 18px; display: none;
 
 </form>
 
+<div id="result">
+<table id="moveList">
+<thead>
+<tr>
+<th>관</th>
+<th>좌석번호</th>
+<th>복귀교시</th>
+<th>이동사유</th>
+<th>입력날짜</th>
+<th>입력시간</th>
+<th>점수</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+<div class="error" id="errorMessage">기타 사유를 입력해주세요.</div>
+
 <script>
-// 기존 JS 그대로 사용 가능
+
+let moveList = [];
+
+const fixedScores = {
+"무단이탈": 10,
+"전자기기 무단사용": 10,
+"핸드폰/Wifi 무단반입": 10,
+"핸드폰 무단사용": 7,
+"무단결석": 7,
+"타층/타관 무단출입": 5,
+"원내대화": 5,
+"무단지각": 5,
+"취침강제하원": 3,
+"음식물섭취": 3,
+"입/퇴실 미준수": 3,
+"핸드폰 미제출": 10
+};
+
+document.getElementById("reason").addEventListener("change", function() {
+
+const value = this.value;
+
+document.getElementById("scoreDiv").style.display =
+fixedScores[value] ? "block" : "none";
+
+if (value === "기타") {
+document.getElementById("otherReason").style.display = "block";
+document.getElementById("otherReasonLabel").style.display = "block";
+} else {
+document.getElementById("otherReason").style.display = "none";
+document.getElementById("otherReasonLabel").style.display = "none";
+document.getElementById("errorMessage").style.display = "none";
+}
+
+if (fixedScores[value]) {
+document.getElementById("score").value = fixedScores[value];
+} else {
+document.getElementById("score").value = "";
+}
+
+});
+
+document.getElementById("moveForm").addEventListener("submit", function(event) {
+
+event.preventDefault();
+
+const building = document.getElementById("building").value;
+const seatNumber =
+document.getElementById("seatNumber").value +
+document.getElementById("seatNumber2").value;
+const returnTime = document.getElementById("returnTime").value;
+const reason = document.getElementById("reason").value;
+const otherReason = document.getElementById("otherReason").value;
+const score = parseInt(document.getElementById("score").value) || null;
+
+if (reason === "기타" && !otherReason.trim()) {
+document.getElementById("errorMessage").style.display = "block";
+return;
+}
+
+submitMoveData(building, seatNumber, returnTime, reason, otherReason, score);
+
+});
+
+function submitMoveData(building, seatNumber, returnTime, reason, otherReason, score) {
+
+const now = new Date();
+const inputDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+const inputTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
+const moveData = {
+building,
+seatNumber,
+returnTime,
+reason: reason === "기타" ? otherReason : reason,
+score: fixedScores[reason] ? score : null,
+inputDate,
+inputTime
+};
+
+moveList.push(moveData);
+moveList.sort((a,b) => b.inputTime.localeCompare(a.inputTime));
+refreshMoveList();
+
+document.getElementById("moveForm").reset();
+document.getElementById("scoreDiv").style.display = "none";
+document.getElementById("otherReason").style.display = "none";
+document.getElementById("otherReasonLabel").style.display = "none";
+
+fetch('https://script.google.com/macros/s/AKfycbyO3_XoamjQF9F7pRazW9L_3P0TqEGH1pg2373ifiob9GJKwfjqV35f0KF053NHElyz/exec', {
+method: 'POST',
+body: JSON.stringify(moveData)
+});
+
+}
+
+function refreshMoveList() {
+const tableBody = document.querySelector("#moveList tbody");
+tableBody.innerHTML = "";
+moveList.forEach(moveData => {
+const row = document.createElement("tr");
+row.innerHTML = `
+<td>${moveData.building}</td>
+<td>${moveData.seatNumber}</td>
+<td>${moveData.returnTime}</td>
+<td>${moveData.reason}</td>
+<td>${moveData.inputDate}</td>
+<td>${moveData.inputTime}</td>
+<td>${moveData.score || '-'}</td>
+`;
+tableBody.appendChild(row);
+});
+}
+
+function resetTable() {
+moveList = [];
+refreshMoveList();
+}
+
 </script>
 
 </body>
