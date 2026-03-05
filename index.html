@@ -160,26 +160,20 @@
     <script>
     let moveList = [];
 
-    // 요청하신 벌점 체계 적용
     const fixedScores = {
-        // 1점
         "지각": 1, 
         "자습 중 이동 태블릿 미입력": 1,
-        // 3점
         "입/퇴실 미준수": 3, 
         "음식물섭취": 3, 
         "취침강제하원(7회)": 3,
-        // 5점
         "무단지각": 5, 
         "타층/타관 무단출입": 5, 
         "원내대화": 5, 
         "모의고사 무단 1회 미응시": 5,
-        // 7점
         "무단이탈": 7, 
         "무단결석": 7, 
         "핸드폰 미제출": 7, 
         "핸드폰 무단사용": 7,
-        // 10점
         "전자기기 부정사용": 10,
     };
 
@@ -225,8 +219,13 @@
 
     function submitMoveData(building, seatNumber, returnTime, reason, otherReason, score) {
         const now = new Date();
-        const inputDate = now.toISOString().split('T')[0];
-        const inputTime = now.toTimeString().split(' ')[0];
+        
+        // ✅ 대한민국 표준시(KST) 기준으로 날짜와 시간 생성
+        const inputDate = now.toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' }); 
+        const inputTime = now.toLocaleTimeString('ko-KR', { 
+            hour12: false, 
+            timeZone: 'Asia/Seoul' 
+        });
 
         const moveData = {
             building,
@@ -277,8 +276,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
