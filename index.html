@@ -279,9 +279,10 @@ button {
     // 자동 자정 새로고침
     function refreshAtMidnight() {
         const now = new Date();
-        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-        const kstNow = new Date(utc + (9 * 3600000));
-        const midnight = new Date(kstNow);
+const kstString = now.toLocaleString("en-US", { timeZone: "Asia/Seoul" });
+const kstNow = new Date(kstString);
+
+const midnight = new Date(kstNow);
         midnight.setHours(24, 0, 0, 0);
         const timeToMidnight = midnight.getTime() - kstNow.getTime();
         setTimeout(function() { location.reload(); }, timeToMidnight);
@@ -499,11 +500,15 @@ button {
     // 데이터 최종 전송
     function submitMoveData(bld, sNum, ret, reas, other, score, target, cDate) {
         const now = new Date();
-        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-        const kstNow = new Date(utc + (9 * 3600000));
-        
-        const date = `${kstNow.getFullYear()}-${String(kstNow.getMonth()+1).padStart(2,'0')}-${String(kstNow.getDate()).padStart(2,'0')}`;
-        const time = `${String(kstNow.getHours()).padStart(2,'0')}:${String(kstNow.getMinutes()).padStart(2,'0')}:${String(kstNow.getSeconds()).padStart(2,'0')}`;
+
+const date = now.toLocaleDateString('sv-SE', {
+    timeZone: 'Asia/Seoul'
+}); 
+
+const time = now.toLocaleTimeString('ko-KR', {
+    hour12: false,
+    timeZone: 'Asia/Seoul'
+});
         
         const cleanR = reas === "기타" ? other : reas;
         const key = bld.replace("관", "").trim() + sNum;
